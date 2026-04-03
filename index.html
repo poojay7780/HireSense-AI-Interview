@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>HireSense AI - Smart Interview</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      text-align: center;
+      background: #eef2f3;
+    }
+
+    h1 { color: #222; }
+
+    #question {
+      font-size: 22px;
+      margin: 20px;
+      color: darkblue;
+    }
+
+    textarea {
+      width: 60%;
+      height: 100px;
+      padding: 10px;
+    }
+
+    select, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+    }
+
+    #result {
+      margin-top: 20px;
+      white-space: pre-line;
+      color: green;
+    }
+
+    #score {
+      font-size: 20px;
+      margin-top: 10px;
+      color: darkred;
+    }
+<style>
+body {
+  font-family: 'Segoe UI', sans-serif;
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  margin: 0;
+  padding: 0;
+  color: #fff;
+}
+
+.container {
+  width: 90%;
+  max-width: 700px;
+  margin: 40px auto;
+  background: #ffffff;
+  color: #333;
+  padding: 25px;
+  border-radius: 15px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  text-align: center;
+}
+
+h1 {
+  color: #4a4a4a;
+}
+
+#question {
+  font-size: 20px;
+  margin: 20px 0;
+  font-weight: bold;
+  color: #333;
+}
+
+textarea {
+  width: 100%;
+  height: 100px;
+  padding: 12px;
+  border-radius: 10px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+}
+
+select {
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+button {
+  padding: 10px 18px;
+  margin: 8px;
+  border: none;
+  border-radius: 8px;
+  background: #667eea;
+  color: white;
+  font-size: 14px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+button:hover {
+  background: #5a67d8;
+}
+
+#result {
+  margin-top: 15px;
+  white-space: pre-line;
+  font-weight: bold;
+}
+
+#score {
+  font-size: 18px;
+  margin-top: 10px;
+  color: #667eea;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🎤 HireSense AI</h1>
+
+<h3>Select Course:</h3>
+<select id="course">
+  <option value="cs">Computer Science</option>
+  <option value="web">Web Development</option>
+  <option value="hr">HR Interview</option>
+</select>
+
+<div id="score">Score: 0</div>
+
+<div id="question">Click Start to begin</div>
+
+<textarea id="answer" placeholder="Type your answer..."></textarea><br>
+
+<button onclick="startInterview()">Start</button>
+<button onclick="submitAnswer()">Submit</button>
+<button onclick="startVoice()">🎤 Speak</button>
+
+<div id="result"></div>
+
+</div>
+
+</body>
+<h1>🎤 HireSense AI</h1>
+
+<h3>Select Course:</h3>
+<select id="course">
+  <option value="cs">Computer Science</option>
+  <option value="web">Web Development</option>
+  <option value="hr">HR Interview</option>
+</select>
+
+<div id="score">Score: 0</div>
+
+<div id="question">Click Start to begin</div>
+
+<textarea id="answer" placeholder="Type your answer..."></textarea><br>
+
+<button onclick="startInterview()">Start</button>
+<button onclick="submitAnswer()">Submit</button>
+<button onclick="startVoice()">🎤 Speak</button>
+
+<div id="result"></div>
+
+<script>
+let questionBank = {
+  cs: [
+    {q: "What is an Operating System?", keywords: ["manage","resource","hardware","software"]},
+    {q: "What is a Data Structure?", keywords: ["organize","data","efficient"]},
+    {q: "What is a Database?", keywords: ["store","data","manage"]},
+    {q: "What is CPU scheduling?", keywords: ["process","cpu","execution"]}
+  ],
+  web: [
+    {q: "What is HTML?", keywords: ["markup","web","structure"]},
+    {q: "What is CSS?", keywords: ["style","design","layout"]},
+    {q: "What is JavaScript?", keywords: ["scripting","dynamic","web"]},
+    {q: "What is responsive design?", keywords: ["mobile","screen","adapt"]}
+  ],
+  hr: [
+    {q: "Tell me about yourself.", keywords: ["student","skills","background"]},
+    {q: "What are your strengths?", keywords: ["hardworking","team","skill"]},
+    {q: "Why should we hire you?", keywords: ["skills","fit","company"]},
+    {q: "Where do you see yourself in 5 years?", keywords: ["growth","career","future"]}
+  ]
+};
+
+let currentQuestions = [];
+let currentIndex = 0;
+let totalScore = 0;
+let maxScore = 0;
+
+// Start Interview
+function startInterview() {
+  let course = document.getElementById("course").value;
+  currentQuestions = questionBank[course];
+  currentIndex = 0;
+  totalScore = 0;
+  maxScore = 0;
+  updateScore();
+  askQuestion();
+}
+
+// Ask Question
+function askQuestion() {
+  if(currentIndex < currentQuestions.length) {
+    let q = currentQuestions[currentIndex].q;
+    document.getElementById("question").innerText = q;
+    speak(q);
+  } else {
+    document.getElementById("question").innerText = "🎉 Interview Completed!";
+    document.getElementById("result").innerText =
+      "Final Score: " + totalScore + "/" + maxScore;
+  }
+}
+
+// Voice Output
+function speak(text) {
+  let speech = new SpeechSynthesisUtterance(text);
+  speech.lang = "en-US";
+  window.speechSynthesis.speak(speech);
+}
+
+// Submit Text
+function submitAnswer() {
+  let ans = document.getElementById("answer").value.toLowerCase();
+  evaluate(ans);
+}
+
+// Voice Input
+function startVoice() {
+  let recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
+  recognition.lang = "en-US";
+  recognition.start();
+
+  recognition.onresult = function(event) {
+    let ans = event.results[0][0].transcript.toLowerCase();
+    evaluate(ans);
+  };
+}
+
+// Evaluate Answer
+function evaluate(ans) {
+  let keywords = currentQuestions[currentIndex].keywords;
+  let score = 0;
+
+  keywords.forEach(word => {
+    if(ans.includes(word)) {
+      score++;
+    }
+  });
+
+  totalScore += score;
+  maxScore += keywords.length;
+
+  let feedback = "";
+  if(score >= keywords.length - 1) {
+    feedback = "✅ Good answer!";
+  } else if(score >= 2) {
+    feedback = "⚠️ Average answer.";
+  } else {
+    feedback = "❌ Poor answer.";
+  }
+
+  document.getElementById("result").innerText =
+    "Your Answer: " + ans +
+    "\nScore: " + score + "/" + keywords.length +
+    "\n" + feedback;
+
+  speak(feedback);
+  updateScore();
+
+  currentIndex++;
+
+  setTimeout(() => {
+    document.getElementById("answer").value = "";
+    document.getElementById("result").innerText = "";
+    askQuestion();
+  }, 2500);
+}
+
+// Update Score Display
+function updateScore() {
+  document.getElementById("score").innerText =
+    "Score: " + totalScore + "/" + maxScore;
+}
+</script>
+
+</body>
+</html>
